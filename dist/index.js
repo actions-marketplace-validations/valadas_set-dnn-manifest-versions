@@ -73,7 +73,7 @@ function run() {
                             for (var i = 0; i < packages[0].package.length; i++) {
                                 var dnnPackage = packages[0].package[i];
                                 dnnPackage.$.version = version_1;
-                                console.log("Set " + file + " to version " + version_1);
+                                console.log("Set " + dnnPackage.name + " to version " + version_1);
                             }
                             // Write back the manifest
                             var builder = new xml2js.Builder({
