@@ -22,7 +22,7 @@ async function run() {
                     for (let i = 0; i < packages[0].package.length; i++) {
                         const dnnPackage = packages[0].package[i];
                         dnnPackage.$.version = version;
-                        core.info(`Set ${file} to version ${version}`)
+                        console.log(`Set ${file} to version ${version}`)
                     }
 
                     // Write back the manifest
@@ -36,7 +36,7 @@ async function run() {
                             core.setFailed(err.message);
                         }
                         else{
-                            core.info(file + ' saved.');
+                            console.log(file + ' saved.');
                         }
                     })
                 });
