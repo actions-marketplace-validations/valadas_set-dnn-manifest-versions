@@ -44,16 +44,62 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var core = __importStar(require("@actions/core"));
+var glob = __importStar(require("@actions/glob"));
+var fs_1 = require("fs");
+var xml2js = __importStar(require("xml2js"));
 function run() {
     return __awaiter(this, void 0, void 0, function () {
+        var version_1, globPattern, globber, files, error_1;
         return __generator(this, function (_a) {
-            try {
-                core.info("Testing");
+            switch (_a.label) {
+                case 0:
+                    _a.trys.push([0, 3, , 4]);
+                    version_1 = core.getInput('version');
+                    globPattern = core.getInput('glob');
+                    return [4 /*yield*/, glob.create(globPattern)];
+                case 1:
+                    globber = _a.sent();
+                    return [4 /*yield*/, globber.glob()];
+                case 2:
+                    files = _a.sent();
+                    files.forEach(function (file) {
+                        // Read the manifest
+                        var manifestFile = fs_1.readFileSync(file);
+                        var parser = new xml2js.Parser();
+                        parser.parseStringPromise(manifestFile.toString())
+                            .then(function (result) {
+                            // Update manifest version
+                            var packages = result.dotnetnuke.packages;
+                            for (var i = 0; i < packages[0].package.length; i++) {
+                                var dnnPackage = packages[0].package[i];
+                                dnnPackage.$.version = version_1;
+                                core.info("Set " + file + " to version " + version_1);
+                            }
+                            // Write back the manifest
+                            var builder = new xml2js.Builder({
+                                headless: true,
+                                cdata: true
+                            });
+                            var newManifestXml = builder.buildObject(result);
+                            fs_1.writeFile(file, newManifestXml, function (err) {
+                                if (err) {
+                                    core.setFailed(err.message);
+                                }
+                                else {
+                                    core.info(file + ' saved.');
+                                }
+                            });
+                        });
+                    });
+                    return [3 /*break*/, 4];
+                case 3:
+                    error_1 = _a.sent();
+                    core.setFailed(error_1.message);
+                    return [3 /*break*/, 4];
+                case 4: return [2 /*return*/];
             }
-            catch (error) {
-                core.setFailed(error.message);
-            }
-            return [2 /*return*/];
         });
     });
 }
+run();
+exports.default = run;
