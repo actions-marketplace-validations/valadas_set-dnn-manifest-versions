@@ -4,7 +4,6 @@ import { readFileSync, writeFile } from 'fs';
 import * as xml2js from 'xml2js';
 
 async function run() {
-    console.log("in run method");
     try {
         const version = core.getInput('version');
         const globPattern = core.getInput('glob');
@@ -12,9 +11,7 @@ async function run() {
         // Get the files
         const globber = await glob.create(globPattern);
         const files = await globber.glob();
-        console.log('got files', files);
         files.forEach(file => {
-            console.log('processing file', file)
             // Read the manifest
             const manifestFile = readFileSync(file);
             const parser = new xml2js.Parser();
@@ -25,7 +22,7 @@ async function run() {
                     for (let i = 0; i < packages[0].package.length; i++) {
                         const dnnPackage = packages[0].package[i];
                         dnnPackage.$.version = version;
-                        console.log(`Set ${file} to version ${version}`)
+                        console.log(`Set ${dnnPackage.name} to version ${version}`)
                     }
 
                     // Write back the manifest
