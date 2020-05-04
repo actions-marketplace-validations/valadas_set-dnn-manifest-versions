@@ -1,0 +1,28 @@
+{
+  "name": "set-dnn-manifest-versions",
+  "version": "0.1.0",
+  "description": "Sets dnn manifest versions in packages",
+  "main": "./dist/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/valadas/set-dnn-manifest-versions.git"
+  },
+  "keywords": [
+    "dnn",
+    "manifest",
+    "github",
+    "action"
+  ],
+  "author": "Daniel Valadas",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/valadas/set-dnn-manifest-versions/issues"
+  },
+  "homepage": "https://github.com/valadas/set-dnn-manifest-versions#readme",
+  "dependencies": {
+    "actions-toolkit": "^4.0.0"
+  }
+}
