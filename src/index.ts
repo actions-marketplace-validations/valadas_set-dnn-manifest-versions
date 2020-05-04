@@ -22,7 +22,7 @@ async function run() {
                     for (let i = 0; i < packages[0].package.length; i++) {
                         const dnnPackage = packages[0].package[i];
                         dnnPackage.$.version = version;
-                        console.log(`Set ${dnnPackage.name} to version ${version}`)
+                        console.log(`Set ${dnnPackage.$.name} to version ${version}`)
                     }
 
                     // Write back the manifest
