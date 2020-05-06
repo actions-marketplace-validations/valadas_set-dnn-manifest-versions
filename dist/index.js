@@ -35,6 +35,13 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
+var __asyncValues = (this && this.__asyncValues) || function (o) {
+    if (!Symbol.asyncIterator) throw new TypeError("Symbol.asyncIterator is not defined.");
+    var m = o[Symbol.asyncIterator], i;
+    return m ? m.call(o) : (o = typeof __values === "function" ? __values(o) : o[Symbol.iterator](), i = {}, verb("next"), verb("throw"), verb("return"), i[Symbol.asyncIterator] = function () { return this; }, i);
+    function verb(n) { i[n] = o[n] && function (v) { return new Promise(function (resolve, reject) { v = o[n](v), settle(resolve, reject, v.done, v.value); }); }; }
+    function settle(resolve, reject, d, v) { Promise.resolve(v).then(function(v) { resolve({ value: v, done: d }); }, reject); }
+};
 var __importStar = (this && this.__importStar) || function (mod) {
     if (mod && mod.__esModule) return mod;
     var result = {};
@@ -46,22 +53,61 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var core = __importStar(require("@actions/core"));
 var glob = __importStar(require("@actions/glob"));
 var fs_1 = require("fs");
+var readline = __importStar(require("readline"));
 var xml2js = __importStar(require("xml2js"));
 function run() {
+    var e_1, _a;
     return __awaiter(this, void 0, void 0, function () {
-        var version_1, globPattern, globber, files, error_1;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
+        var version_1, globPattern, skipFile, fileStream, rl, rl_1, rl_1_1, line, e_1_1, globber, files, error_1;
+        return __generator(this, function (_b) {
+            switch (_b.label) {
                 case 0:
-                    _a.trys.push([0, 3, , 4]);
+                    _b.trys.push([0, 15, , 16]);
                     version_1 = core.getInput('version');
                     globPattern = core.getInput('glob');
-                    return [4 /*yield*/, glob.create(globPattern)];
+                    skipFile = core.getInput('skipFile');
+                    if (!(skipFile !== null && skipFile.length > 0)) return [3 /*break*/, 12];
+                    globPattern = "./**/*.dnn ";
+                    fileStream = fs_1.createReadStream(skipFile);
+                    rl = readline.createInterface({
+                        input: fileStream,
+                        crlfDelay: Infinity
+                    });
+                    _b.label = 1;
                 case 1:
-                    globber = _a.sent();
+                    _b.trys.push([1, 6, 7, 12]);
+                    rl_1 = __asyncValues(rl);
+                    _b.label = 2;
+                case 2: return [4 /*yield*/, rl_1.next()];
+                case 3:
+                    if (!(rl_1_1 = _b.sent(), !rl_1_1.done)) return [3 /*break*/, 5];
+                    line = rl_1_1.value;
+                    globPattern += " !" + line;
+                    _b.label = 4;
+                case 4: return [3 /*break*/, 2];
+                case 5: return [3 /*break*/, 12];
+                case 6:
+                    e_1_1 = _b.sent();
+                    e_1 = { error: e_1_1 };
+                    return [3 /*break*/, 12];
+                case 7:
+                    _b.trys.push([7, , 10, 11]);
+                    if (!(rl_1_1 && !rl_1_1.done && (_a = rl_1.return))) return [3 /*break*/, 9];
+                    return [4 /*yield*/, _a.call(rl_1)];
+                case 8:
+                    _b.sent();
+                    _b.label = 9;
+                case 9: return [3 /*break*/, 11];
+                case 10:
+                    if (e_1) throw e_1.error;
+                    return [7 /*endfinally*/];
+                case 11: return [7 /*endfinally*/];
+                case 12: return [4 /*yield*/, glob.create(globPattern)];
+                case 13:
+                    globber = _b.sent();
                     return [4 /*yield*/, globber.glob()];
-                case 2:
-                    files = _a.sent();
+                case 14:
+                    files = _b.sent();
                     files.forEach(function (file) {
                         // Read the manifest
                         var manifestFile = fs_1.readFileSync(file);
@@ -91,12 +137,12 @@ function run() {
                             });
                         });
                     });
-                    return [3 /*break*/, 4];
-                case 3:
-                    error_1 = _a.sent();
+                    return [3 /*break*/, 16];
+                case 15:
+                    error_1 = _b.sent();
                     core.setFailed(error_1.message);
-                    return [3 /*break*/, 4];
-                case 4: return [2 /*return*/];
+                    return [3 /*break*/, 16];
+                case 16: return [2 /*return*/];
             }
         });
     });

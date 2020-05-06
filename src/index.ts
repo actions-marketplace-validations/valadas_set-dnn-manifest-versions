@@ -1,12 +1,27 @@
 import * as core from '@actions/core';
 import * as glob from '@actions/glob';
-import { readFileSync, writeFile } from 'fs';
+import { readFileSync, writeFile, createReadStream } from 'fs';
+import * as readline from 'readline';
 import * as xml2js from 'xml2js';
 
 async function run() {
     try {
         const version = core.getInput('version');
-        const globPattern = core.getInput('glob');
+        let globPattern = core.getInput('glob');
+        const skipFile = core.getInput('skipFile');
+
+        // Generate the glob if skipFile is provided
+        if (skipFile !== null && skipFile.length > 0) {
+            globPattern = "./**/*.dnn ";
+            const fileStream = createReadStream(skipFile);
+            const rl = readline.createInterface({
+                input: fileStream,
+                crlfDelay: Infinity
+            });
+            for await (const line of rl) {
+                globPattern += " !" + line;
+            }
+        }
 
         // Get the files
         const globber = await glob.create(globPattern);

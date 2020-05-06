@@ -9,6 +9,9 @@ inputs:
   version:
     description: Version to set in the manifests, should be a manifest save version string as in 09.06.00
     required: true
+  skipFile:
+    description: A relative path (./some-folder/unversionedManifests.txt) to  text file with one glob per line of the manifest files to not update. This will update all other .dnn files not listed. When this option is used, the glob input is ignored.
+    required: false
 runs:
   using: 'node12'
   main: './dist/index.js'

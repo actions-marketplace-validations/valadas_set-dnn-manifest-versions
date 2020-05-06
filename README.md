@@ -3,10 +3,11 @@ Sets Dnn manifest package versions to a given version string
 
 ## Inputs
 
-| Input   | Required | Default  | Notes |
-|---------|----------|----------|-------|
-| version | Yes      |          |       |
-| glob    | No       | **/*.dnn | See [Patterns](https://github.com/actions/toolkit/blob/master/packages/glob/README.md#patterns) for valid usage |
+| Input    | Required | Default  | Notes |
+|----------|----------|----------|-------|
+| version  | Yes      |          |       |
+| glob     | No       | **/*.dnn | See [Patterns](https://github.com/actions/toolkit/blob/master/packages/glob/README.md#patterns) for valid usage |
+| skipFile | No       |          | glob input is ignored when this option is used. |
 
 ## Usage example
 When providing only a version, the action will update all the .dnn manifest files in the root or any subfolder.
@@ -35,4 +36,16 @@ You can alternatively provide your own globbing patter for files to include or e
   with:
     version: 02.03.04
     glob: './my-mono-repo/modules/**/*.dnn  !somemodule/*.dnn' # Will include all .dnn files under the my-mono-repo/modules folder except if it is in a somemodule folder. See https://github.com/actions/toolkit/blob/master/packages/glob/README.md#patterns for details on supported values.
+```
+
+## Example with skipFile (optional)
+The skipfile is a text file with one glob per line for the manifest files to ignore. All other .dnn manifests not listed in the skipFile will be modified. When skipFile input is used, the glob input is ignored.
+
+```yaml
+...
+
+- uses: valadas/set-dnn-manifest-versions@v1
+  with:
+    version: 04.05.06
+    skipFile: './build/unversionedManifests.txt' # Will version all manifests except the ones listed in the glob patterns in the lines of the provided text file.
 ```
