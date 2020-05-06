@@ -1,0 +1,14 @@
+name: 'set-dnn-manifest-versions'
+description: 'Sets versions in dnn manifest packages'
+author: 'valadas'
+inputs:
+  glob:
+    description: Globbing pattern to include or exclude manifests to version
+    required: false
+    default: '**/*.dnn'
+  version:
+    description: Version to set in the manifests, should be a manifest save version string as in 09.06.00
+    required: true
+runs:
+  using: 'node12'
+  main: './dist/index.js'
