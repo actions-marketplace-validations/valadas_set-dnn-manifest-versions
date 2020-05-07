@@ -12,6 +12,10 @@ inputs:
   skipFile:
     description: A relative path (./some-folder/unversionedManifests.txt) to  text file with one glob per line of the manifest files to not update. This will update all other .dnn files not listed. When this option is used, the glob input is ignored.
     required: false
+  includeSolutionInfo:
+    description: When true, also sets the versions in any found SolutionInfo.cs file.
+    default: 'false'
+    required: false
 runs:
   using: 'node12'
   main: './dist/index.js'

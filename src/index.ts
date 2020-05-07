@@ -9,6 +9,7 @@ async function run() {
         const version = core.getInput('version');
         let globPattern = core.getInput('glob');
         const skipFile = core.getInput('skipFile');
+        const includeSolutionInfo = core.getInput('includeSolutionInfo').toUpperCase() === "TRUE";
         console.log("skipFile provided: ", skipFile);
 
         // Generate the glob if skipFile is provided
@@ -60,9 +61,56 @@ async function run() {
                     })
                 });
         });
+
+        // Handle the solutionInfo.cs file
+        if (includeSolutionInfo) {
+            const solutionInfoGlob = await glob.create('/**/SolutionInfo.cs');
+            const solutionInfos = await solutionInfoGlob.glob();
+            solutionInfos.forEach(solutionInfo => {
+                const versionInfo = getVersion(version);
+                const formatedVersion = formatVersionForSolutionInfo(versionInfo);
+                let solutionInfoContent = readFileSync(solutionInfo).toString();
+                solutionInfoContent = solutionInfoContent.replace(
+                    /[assembly: AssemblyVersion(".*")]/, 
+                    `[assembly: AssemblyVersion("${formatedVersion}")]`);
+                solutionInfoContent = solutionInfoContent.replace(
+                    /[assembly: AssemblyFileVersion(".*")]/, 
+                    `[assembly: AssemblyFileVersion("${formatedVersion}")]`);
+                solutionInfoContent = solutionInfoContent.replace(
+                    /[assembly: AssemblyInformationalVersion(".*")]/, 
+                    `[assembly: AssemblyInformationalVersion("${formatedVersion} Release Candidate")]`);
+                writeFile(solutionInfo, solutionInfoContent, err => {
+                    if (err){
+                        core.setFailed(err.message);
+                    }
+                    else{
+                        console.log(solutionInfo + ' saved.');
+                    }
+                });
+            });
+        }
     } catch (error) {
         core.setFailed(error.message);
     }
+}
+
+const getVersion = (versionString: string): Version => {
+    const parts = versionString.split('.');
+    return {
+        major: parseInt(parts[0]),
+        minor: parseInt(parts[1]),
+        patch: parseInt(parts[2])
+    };
+}
+
+const formatVersionForSolutionInfo = (version: Version): string => {
+    return `${version.major}.${version.minor}.${version.patch}.0`;
+}
+
+interface Version {
+    major: number,
+    minor: number,
+    patch: number
 }
 
 run()

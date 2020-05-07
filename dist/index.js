@@ -58,14 +58,15 @@ var xml2js = __importStar(require("xml2js"));
 function run() {
     var e_1, _a;
     return __awaiter(this, void 0, void 0, function () {
-        var version_1, globPattern, skipFile, fileStream, rl, rl_1, rl_1_1, line, e_1_1, globber, files, error_1;
+        var version_1, globPattern, skipFile, includeSolutionInfo, fileStream, rl, rl_1, rl_1_1, line, e_1_1, globber, files, solutionInfoGlob, solutionInfos, error_1;
         return __generator(this, function (_b) {
             switch (_b.label) {
                 case 0:
-                    _b.trys.push([0, 16, , 17]);
+                    _b.trys.push([0, 19, , 20]);
                     version_1 = core.getInput('version');
                     globPattern = core.getInput('glob');
                     skipFile = core.getInput('skipFile');
+                    includeSolutionInfo = core.getInput('includeSolutionInfo').toUpperCase() === "TRUE";
                     console.log("skipFile provided: ", skipFile);
                     if (!(skipFile !== null && skipFile.length > 0)) return [3 /*break*/, 13];
                     globPattern = "**/*.dnn";
@@ -143,15 +144,50 @@ function run() {
                             });
                         });
                     });
-                    return [3 /*break*/, 17];
+                    if (!includeSolutionInfo) return [3 /*break*/, 18];
+                    return [4 /*yield*/, glob.create('/**/SolutionInfo.cs')];
                 case 16:
+                    solutionInfoGlob = _b.sent();
+                    return [4 /*yield*/, solutionInfoGlob.glob()];
+                case 17:
+                    solutionInfos = _b.sent();
+                    solutionInfos.forEach(function (solutionInfo) {
+                        var versionInfo = getVersion(version_1);
+                        var formatedVersion = formatVersionForSolutionInfo(versionInfo);
+                        var solutionInfoContent = fs_1.readFileSync(solutionInfo).toString();
+                        solutionInfoContent = solutionInfoContent.replace(/[assembly: AssemblyVersion(".*")]/, "[assembly: AssemblyVersion(\"" + formatedVersion + "\")]");
+                        solutionInfoContent = solutionInfoContent.replace(/[assembly: AssemblyFileVersion(".*")]/, "[assembly: AssemblyFileVersion(\"" + formatedVersion + "\")]");
+                        solutionInfoContent = solutionInfoContent.replace(/[assembly: AssemblyInformationalVersion(".*")]/, "[assembly: AssemblyInformationalVersion(\"" + formatedVersion + " Release Candidate\")]");
+                        fs_1.writeFile(solutionInfo, solutionInfoContent, function (err) {
+                            if (err) {
+                                core.setFailed(err.message);
+                            }
+                            else {
+                                console.log(solutionInfo + ' saved.');
+                            }
+                        });
+                    });
+                    _b.label = 18;
+                case 18: return [3 /*break*/, 20];
+                case 19:
                     error_1 = _b.sent();
                     core.setFailed(error_1.message);
-                    return [3 /*break*/, 17];
-                case 17: return [2 /*return*/];
+                    return [3 /*break*/, 20];
+                case 20: return [2 /*return*/];
             }
         });
     });
 }
+var getVersion = function (versionString) {
+    var parts = versionString.split('.');
+    return {
+        major: parseInt(parts[0]),
+        minor: parseInt(parts[1]),
+        patch: parseInt(parts[2])
+    };
+};
+var formatVersionForSolutionInfo = function (version) {
+    return version.major + "." + version.minor + "." + version.patch + ".0";
+};
 run();
 exports.default = run;
