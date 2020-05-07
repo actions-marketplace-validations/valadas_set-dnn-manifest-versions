@@ -20,6 +20,14 @@ inputs:
     description: This option is specially meant for the Dnn.Platform repository. Upon creation of a release branch, updates the issue templates to indicate the RC version.
     required: false
     default: 'false'
+  includePackageJson:
+    description: If true, will update all versions of package.json
+    required: false
+    default: 'false'
+  includeDnnReactCommon:
+    description: This option is specially meant for the Dnn.Platform repository. If true, will update all references to the react common bundle too.
+    required: false
+    default: 'false'
 runs:
   using: 'node12'
   main: './dist/index.js'

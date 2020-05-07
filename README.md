@@ -10,6 +10,8 @@ Sets Dnn manifest package versions to a given version string
 | skipFile              | No       | null     | glob input is ignored when this option is used.    |
 | includeSolutionInfo   | No       | false    | When true, also sets the versions in any found SolutionInfo.cs file. |
 | includeIssueTemplates | No       | false    | Specially for the Dnn.Platform repository to update issue templates after creating an RC.
+| includePackageJson    | No       | false    | If true, will update all versions of packa
+| includeDnnReactCommon | No       | false    | This option is specially meant for the Dnn.Platform repository. If true, will update all references to the react common bundle too.
 
 ## Usage example
 When providing only a version, the action will update all the .dnn manifest files in the root or any subfolder.

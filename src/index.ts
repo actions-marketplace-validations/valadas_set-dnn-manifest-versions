@@ -10,6 +10,8 @@ async function run() {
         const skipFile = core.getInput('skipFile');
         const includeSolutionInfo = core.getInput('includeSolutionInfo').toUpperCase() === "TRUE";
         const includeIssueTemplates = core.getInput('updateIssueTemplates').toUpperCase() === "TRUE";
+        const includePackageJson = core.getInput('includePackageJson').toUpperCase() === "TRUE";
+        const includeDnnReactCommon = core.getInput('includeDnnReactCommon').toUpperCase() === "TRUE";
         console.log("skipFile provided: ", skipFile);
 
         // Generate the glob if skipFile is provided
@@ -86,6 +88,7 @@ async function run() {
 
         // Update the issue templates
         if (includeIssueTemplates) {
+            core.startGroup("Updating issue template");
             const issueTemplateGlob = await glob.create('./.github/ISSUE_TEMPLATE/bug-report.md');
             const files = await issueTemplateGlob.glob();
             const issueContent = readFileSync(files[0]).toString();
@@ -101,7 +104,46 @@ async function run() {
                     console.log("updated ", files[0]);
                 }
             });
+            core.endGroup();
         }
+
+        // Update package.json
+        if (includePackageJson) {
+            const singleDigitsVersion = getSingleDigitsVersion(version);
+            const packageJsonGlob = await glob.create('./**/package.json');
+            const files = await packageJsonGlob.glob();
+            files.forEach(file => {
+                const packageJsonContent = readFileSync(file).toString();
+                const packageJson = JSON.parse(packageJsonContent);
+                core.startGroup(packageJson['name']);
+                if (packageJson['version']) {
+                    console.log("from ", packageJson['version']);
+                    packageJson['version'] = getSingleDigitsVersion(version);
+                    console.log("to ", packageJson['version']);
+                }
+                if (includeDnnReactCommon && packageJson['devDependencies']['@dnnsoftware/dnn-react-common']) {
+                    console.log("@dnnsoftware/dnn-react-common from", packageJson['devDependencies']['@dnnsoftware/dnn-react-common']);
+                    packageJson['devDependencies']['@dnnsoftware/dnn-react-common'] = singleDigitsVersion;
+                    console.log("to ", singleDigitsVersion);
+                }
+                if (includeDnnReactCommon && packageJson['dependencies']['@dnnsoftware/dnn-react-common']) {
+                    console.log("@dnnsoftware/dnn-react-common from", packageJson['dependencies']['@dnnsoftware/dnn-react-common']);
+                    packageJson['dependencies']['@dnnsoftware/dnn-react-common'] = singleDigitsVersion;
+                    console.log("to ", singleDigitsVersion)
+                }
+                const newFileContent = JSON.stringify(packageJson);
+                writeFile(file, newFileContent, err => {
+                    if (err) {
+                        core.setFailed(err.message);
+                    }
+                    else {
+                        console.log ("saved");
+                    }
+                });
+                core.endGroup();
+            });
+        }
+
     } catch (error) {
         core.setFailed(error.message);
     }
@@ -114,6 +156,11 @@ const getVersion = (versionString: string): Version => {
         minor: parseInt(parts[1]),
         patch: parseInt(parts[2])
     };
+}
+
+const getSingleDigitsVersion = (version: string): string => {
+    const v = getVersion(version);
+    return v.major + "." + v.minor + "." + v.patch;
 }
 
 const formatVersionForSolutionInfo = (version: Version): string => {

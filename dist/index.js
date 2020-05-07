@@ -57,16 +57,18 @@ var readline = __importStar(require("readline"));
 function run() {
     var e_1, _a;
     return __awaiter(this, void 0, void 0, function () {
-        var version_1, globPattern, skipFile, includeSolutionInfo, includeIssueTemplates, fileStream, rl, rl_1, rl_1_1, line, e_1_1, globber, files, solutionInfoGlob, solutionInfos, issueTemplateGlob, files_1, issueContent, error_1;
+        var version_1, globPattern, skipFile, includeSolutionInfo, includeIssueTemplates, includePackageJson, includeDnnReactCommon_1, fileStream, rl, rl_1, rl_1_1, line, e_1_1, globber, files, solutionInfoGlob, solutionInfos, issueTemplateGlob, files_1, issueContent, singleDigitsVersion_1, packageJsonGlob, files_2, error_1;
         return __generator(this, function (_b) {
             switch (_b.label) {
                 case 0:
-                    _b.trys.push([0, 22, , 23]);
+                    _b.trys.push([0, 25, , 26]);
                     version_1 = core.getInput('version');
                     globPattern = core.getInput('glob');
                     skipFile = core.getInput('skipFile');
                     includeSolutionInfo = core.getInput('includeSolutionInfo').toUpperCase() === "TRUE";
                     includeIssueTemplates = core.getInput('updateIssueTemplates').toUpperCase() === "TRUE";
+                    includePackageJson = core.getInput('includePackageJson').toUpperCase() === "TRUE";
+                    includeDnnReactCommon_1 = core.getInput('includeDnnReactCommon').toUpperCase() === "TRUE";
                     console.log("skipFile provided: ", skipFile);
                     if (!(skipFile !== null && skipFile.length > 0)) return [3 /*break*/, 13];
                     globPattern = "**/*.dnn";
@@ -165,6 +167,7 @@ function run() {
                     _b.label = 18;
                 case 18:
                     if (!includeIssueTemplates) return [3 /*break*/, 21];
+                    core.startGroup("Updating issue template");
                     return [4 /*yield*/, glob.create('./.github/ISSUE_TEMPLATE/bug-report.md')];
                 case 19:
                     issueTemplateGlob = _b.sent();
@@ -181,13 +184,54 @@ function run() {
                             console.log("updated ", files_1[0]);
                         }
                     });
+                    core.endGroup();
                     _b.label = 21;
-                case 21: return [3 /*break*/, 23];
+                case 21:
+                    if (!includePackageJson) return [3 /*break*/, 24];
+                    singleDigitsVersion_1 = getSingleDigitsVersion(version_1);
+                    return [4 /*yield*/, glob.create('./**/package.json')];
                 case 22:
+                    packageJsonGlob = _b.sent();
+                    return [4 /*yield*/, packageJsonGlob.glob()];
+                case 23:
+                    files_2 = _b.sent();
+                    files_2.forEach(function (file) {
+                        var packageJsonContent = fs_1.readFileSync(file).toString();
+                        var packageJson = JSON.parse(packageJsonContent);
+                        core.startGroup(packageJson['name']);
+                        if (packageJson['version']) {
+                            console.log("from ", packageJson['version']);
+                            packageJson['version'] = getSingleDigitsVersion(version_1);
+                            console.log("to ", packageJson['version']);
+                        }
+                        if (includeDnnReactCommon_1 && packageJson['devDependencies']['@dnnsoftware/dnn-react-common']) {
+                            console.log("@dnnsoftware/dnn-react-common from", packageJson['devDependencies']['@dnnsoftware/dnn-react-common']);
+                            packageJson['devDependencies']['@dnnsoftware/dnn-react-common'] = singleDigitsVersion_1;
+                            console.log("to ", singleDigitsVersion_1);
+                        }
+                        if (includeDnnReactCommon_1 && packageJson['dependencies']['@dnnsoftware/dnn-react-common']) {
+                            console.log("@dnnsoftware/dnn-react-common from", packageJson['dependencies']['@dnnsoftware/dnn-react-common']);
+                            packageJson['dependencies']['@dnnsoftware/dnn-react-common'] = singleDigitsVersion_1;
+                            console.log("to ", singleDigitsVersion_1);
+                        }
+                        var newFileContent = JSON.stringify(packageJson);
+                        fs_1.writeFile(file, newFileContent, function (err) {
+                            if (err) {
+                                core.setFailed(err.message);
+                            }
+                            else {
+                                console.log("saved");
+                            }
+                        });
+                        core.endGroup();
+                    });
+                    _b.label = 24;
+                case 24: return [3 /*break*/, 26];
+                case 25:
                     error_1 = _b.sent();
                     core.setFailed(error_1.message);
-                    return [3 /*break*/, 23];
-                case 23: return [2 /*return*/];
+                    return [3 /*break*/, 26];
+                case 26: return [2 /*return*/];
             }
         });
     });
@@ -199,6 +243,10 @@ var getVersion = function (versionString) {
         minor: parseInt(parts[1]),
         patch: parseInt(parts[2])
     };
+};
+var getSingleDigitsVersion = function (version) {
+    var v = getVersion(version);
+    return v.major + "." + v.minor + "." + v.patch;
 };
 var formatVersionForSolutionInfo = function (version) {
     return version.major + "." + version.minor + "." + version.patch + ".0";
