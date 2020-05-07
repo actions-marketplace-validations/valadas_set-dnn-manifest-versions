@@ -3,12 +3,13 @@ Sets Dnn manifest package versions to a given version string
 
 ## Inputs
 
-| Input               | Required | Default  | Notes |
-|---------------------|----------|----------|-------|
-| version             | Yes      |          |       |
-| glob                | No       | **/*.dnn | See [Patterns](https://github.com/actions/toolkit/blob/master/packages/glob/README.md#patterns) for valid usage |
-| skipFile            | No       | null     | glob input is ignored when this option is used. |
-| includeSolutionInfo | No       | false    | When true, also sets the versions in any found SolutionInfo.cs file. |
+| Input                 | Required | Default  | Notes |
+|-----------------------|----------|----------|-------|
+| version               | Yes      |          |       |
+| glob                  | No       | **/*.dnn | See [Patterns](https://github.com/actions/toolkit/blob/master/packages/glob/README.md#patterns) for valid usage |
+| skipFile              | No       | null     | glob input is ignored when this option is used.    |
+| includeSolutionInfo   | No       | false    | When true, also sets the versions in any found SolutionInfo.cs file. |
+| includeIssueTemplates | No       | false    | Specially for the Dnn.Platform repository to update issue templates after creating an RC.
 
 ## Usage example
 When providing only a version, the action will update all the .dnn manifest files in the root or any subfolder.

@@ -16,6 +16,10 @@ inputs:
     description: When true, also sets the versions in any found SolutionInfo.cs file.
     default: 'false'
     required: false
+  includeIssueTemplates:
+    description: This option is specially meant for the Dnn.Platform repository. Upon creation of a release branch, updates the issue templates to indicate the RC version.
+    required: false
+    default: 'false'
 runs:
   using: 'node12'
   main: './dist/index.js'

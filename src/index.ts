@@ -9,6 +9,7 @@ async function run() {
         let globPattern = core.getInput('glob');
         const skipFile = core.getInput('skipFile');
         const includeSolutionInfo = core.getInput('includeSolutionInfo').toUpperCase() === "TRUE";
+        const includeIssueTemplates = core.getInput('updateIssueTemplates').toUpperCase() === "TRUE";
         console.log("skipFile provided: ", skipFile);
 
         // Generate the glob if skipFile is provided
@@ -80,6 +81,25 @@ async function run() {
                         console.log(solutionInfo + ' saved.');
                     }
                 });
+            });
+        }
+
+        // Update the issue templates
+        if (includeIssueTemplates) {
+            const issueTemplateGlob = await glob.create('./.github/ISSUE_TEMPLATE/bug-report.md');
+            const files = await issueTemplateGlob.glob();
+            const issueContent = readFileSync(files[0]).toString();
+            issueContent.replace(
+                /[.\s\S]*?\* \[ \].*alpha build([.\s\S])*?\* \[ \].*/gm,
+                `$1\n* [ ] ${version} release candidate\n`
+            );
+            writeFile(files[0], issueContent, err => {
+                if (err) {
+                    core.setFailed(err.message);
+                }
+                else {
+                    console.log("updated ", files[0]);
+                }
             });
         }
     } catch (error) {
