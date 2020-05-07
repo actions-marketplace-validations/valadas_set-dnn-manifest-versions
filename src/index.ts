@@ -6,7 +6,6 @@ import * as xml2js from 'xml2js';
 
 async function run() {
     try {
-        core.setCommandEcho(true);
         const version = core.getInput('version');
         let globPattern = core.getInput('glob');
         const skipFile = core.getInput('skipFile');
@@ -60,7 +59,6 @@ async function run() {
                         }
                     })
                 });
-            core.setCommandEcho(false);
         });
     } catch (error) {
         core.setFailed(error.message);

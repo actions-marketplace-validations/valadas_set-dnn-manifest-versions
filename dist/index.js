@@ -63,7 +63,6 @@ function run() {
             switch (_b.label) {
                 case 0:
                     _b.trys.push([0, 16, , 17]);
-                    core.setCommandEcho(true);
                     version_1 = core.getInput('version');
                     globPattern = core.getInput('glob');
                     skipFile = core.getInput('skipFile');
@@ -143,7 +142,6 @@ function run() {
                                 }
                             });
                         });
-                        core.setCommandEcho(false);
                     });
                     return [3 /*break*/, 17];
                 case 16:
