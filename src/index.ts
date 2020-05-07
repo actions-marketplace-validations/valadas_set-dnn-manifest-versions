@@ -25,7 +25,7 @@ async function run() {
 
         // Get the files
         const globber = await glob.create(globPattern);
-        console.log("Using glob: ", globPattern);
+        core.debug("Using glob: " + globPattern);
         const files = await globber.glob();
         files.forEach(file => {
             // Read the manifest
