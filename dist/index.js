@@ -151,7 +151,7 @@ function run() {
                         var solutionInfoContent = fs_1.readFileSync(solutionInfo).toString();
                         solutionInfoContent = solutionInfoContent.replace(/\[assembly: AssemblyVersion\(".*"\)\]/gm, "[assembly: AssemblyVersion(\"" + formatedVersion + "\")]");
                         solutionInfoContent = solutionInfoContent.replace(/\[assembly: AssemblyFileVersion\(".*"\)\]/gm, "[assembly: AssemblyFileVersion(\"" + formatedVersion + "\")]");
-                        solutionInfoContent = solutionInfoContent.replace(/\[assembly: AssemblyInformationalVersion\(".*"\)\]/gm, "[assembly: AssemblyInformationalVersion(\"" + formatedVersion + " Release Candidate\")]");
+                        solutionInfoContent = solutionInfoContent.replace(/\[assembly: AssemblyInformationalVersion\(".*"\)\]/gm, "[assembly: AssemblyInformationalVersion(\"" + formatedVersion + " Custom Build\")]");
                         fs_1.writeFile(solutionInfo, solutionInfoContent, function (err) {
                             if (err) {
                                 core.setFailed(err.message);

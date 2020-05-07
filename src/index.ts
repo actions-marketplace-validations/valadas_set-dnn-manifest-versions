@@ -71,7 +71,7 @@ async function run() {
                     `[assembly: AssemblyFileVersion("${formatedVersion}")]`);
                 solutionInfoContent = solutionInfoContent.replace(
                     /\[assembly: AssemblyInformationalVersion\(".*"\)\]/gm, 
-                    `[assembly: AssemblyInformationalVersion("${formatedVersion} Release Candidate")]`);
+                    `[assembly: AssemblyInformationalVersion("${formatedVersion} Custom Build")]`);
                 writeFile(solutionInfo, solutionInfoContent, err => {
                     if (err){
                         core.setFailed(err.message);
