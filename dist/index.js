@@ -145,7 +145,7 @@ function run() {
                         });
                     });
                     if (!includeSolutionInfo) return [3 /*break*/, 18];
-                    return [4 /*yield*/, glob.create('/**/SolutionInfo.cs')];
+                    return [4 /*yield*/, glob.create('./**/SolutionInfo.cs', { followSymbolicLinks: false })];
                 case 16:
                     solutionInfoGlob = _b.sent();
                     return [4 /*yield*/, solutionInfoGlob.glob()];
