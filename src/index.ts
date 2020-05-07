@@ -6,14 +6,15 @@ import * as xml2js from 'xml2js';
 
 async function run() {
     try {
+        core.setCommandEcho(true);
         const version = core.getInput('version');
         let globPattern = core.getInput('glob');
         const skipFile = core.getInput('skipFile');
-        core.debug("skipFile provided: " + skipFile);
+        console.log("skipFile provided: ", skipFile);
 
         // Generate the glob if skipFile is provided
         if (skipFile !== null && skipFile.length > 0) {
-            globPattern = "**/*.dnn ";
+            globPattern = "**/*.dnn";
             const fileStream = createReadStream(skipFile);
             const rl = readline.createInterface({
                 input: fileStream,
@@ -21,8 +22,9 @@ async function run() {
             });
             for await (const line of rl) {
                 globPattern += " !" + line;
-                core.debug("Adding " + line + " to ignored globs.");
+                console.log("Adding " + line + " to ignored globs.");
             }
+            console.log("Using glob: ", globPattern);
             core.debug("Using glob: " + globPattern);
         }
 
@@ -58,6 +60,7 @@ async function run() {
                         }
                     })
                 });
+            core.setCommandEcho(false);
         });
     } catch (error) {
         core.setFailed(error.message);

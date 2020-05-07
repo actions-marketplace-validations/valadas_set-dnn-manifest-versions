@@ -62,12 +62,14 @@ function run() {
         return __generator(this, function (_b) {
             switch (_b.label) {
                 case 0:
-                    _b.trys.push([0, 15, , 16]);
+                    _b.trys.push([0, 16, , 17]);
+                    core.setCommandEcho(true);
                     version_1 = core.getInput('version');
                     globPattern = core.getInput('glob');
                     skipFile = core.getInput('skipFile');
-                    if (!(skipFile !== null && skipFile.length > 0)) return [3 /*break*/, 12];
-                    globPattern = "**/*.dnn ";
+                    console.log("skipFile provided: ", skipFile);
+                    if (!(skipFile !== null && skipFile.length > 0)) return [3 /*break*/, 13];
+                    globPattern = "**/*.dnn";
                     fileStream = fs_1.createReadStream(skipFile);
                     rl = readline.createInterface({
                         input: fileStream,
@@ -83,6 +85,7 @@ function run() {
                     if (!(rl_1_1 = _b.sent(), !rl_1_1.done)) return [3 /*break*/, 5];
                     line = rl_1_1.value;
                     globPattern += " !" + line;
+                    console.log("Adding " + line + " to ignored globs.");
                     _b.label = 4;
                 case 4: return [3 /*break*/, 2];
                 case 5: return [3 /*break*/, 12];
@@ -102,12 +105,15 @@ function run() {
                     if (e_1) throw e_1.error;
                     return [7 /*endfinally*/];
                 case 11: return [7 /*endfinally*/];
-                case 12: return [4 /*yield*/, glob.create(globPattern)];
-                case 13:
-                    globber = _b.sent();
+                case 12:
+                    console.log("Using glob: ", globPattern);
                     core.debug("Using glob: " + globPattern);
-                    return [4 /*yield*/, globber.glob()];
+                    _b.label = 13;
+                case 13: return [4 /*yield*/, glob.create(globPattern)];
                 case 14:
+                    globber = _b.sent();
+                    return [4 /*yield*/, globber.glob()];
+                case 15:
                     files = _b.sent();
                     files.forEach(function (file) {
                         // Read the manifest
@@ -137,13 +143,14 @@ function run() {
                                 }
                             });
                         });
+                        core.setCommandEcho(false);
                     });
-                    return [3 /*break*/, 16];
-                case 15:
+                    return [3 /*break*/, 17];
+                case 16:
                     error_1 = _b.sent();
                     core.setFailed(error_1.message);
-                    return [3 /*break*/, 16];
-                case 16: return [2 /*return*/];
+                    return [3 /*break*/, 17];
+                case 17: return [2 /*return*/];
             }
         });
     });
