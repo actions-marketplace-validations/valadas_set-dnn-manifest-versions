@@ -91,8 +91,8 @@ async function run() {
             core.startGroup("Updating issue template");
             const issueTemplateGlob = await glob.create('./.github/ISSUE_TEMPLATE/bug-report.md');
             const files = await issueTemplateGlob.glob();
-            const issueContent = readFileSync(files[0]).toString();
-            issueContent.replace(
+            let issueContent = readFileSync(files[0]).toString();
+            issueContent = issueContent.replace(
                 /([.\s\S]*?\* \[ \].*alpha build)([.\s\S]*?)(\* \[ \].*)/gm,
                 `$1\n* [ ] ${version} release candidate\n$3`
             );
