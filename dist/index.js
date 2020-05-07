@@ -66,7 +66,7 @@ function run() {
                     globPattern = core.getInput('glob');
                     skipFile = core.getInput('skipFile');
                     includeSolutionInfo = core.getInput('includeSolutionInfo').toUpperCase() === "TRUE";
-                    includeIssueTemplates = core.getInput('updateIssueTemplates').toUpperCase() === "TRUE";
+                    includeIssueTemplates = core.getInput('includeIssueTemplates').toUpperCase() === "TRUE";
                     includePackageJson = core.getInput('includePackageJson').toUpperCase() === "TRUE";
                     includeDnnReactCommon_1 = core.getInput('includeDnnReactCommon').toUpperCase() === "TRUE";
                     console.log("skipFile provided: ", skipFile);
@@ -199,17 +199,17 @@ function run() {
                         var packageJsonContent = fs_1.readFileSync(file).toString();
                         var packageJson = JSON.parse(packageJsonContent);
                         core.startGroup(packageJson['name']);
-                        if (packageJson['version']) {
+                        if (packageJson['version'] !== undefined) {
                             console.log("from ", packageJson['version']);
                             packageJson['version'] = getSingleDigitsVersion(version_1);
                             console.log("to ", packageJson['version']);
                         }
-                        if (includeDnnReactCommon_1 && packageJson['devDependencies']['@dnnsoftware/dnn-react-common']) {
+                        if (includeDnnReactCommon_1 && packageJson['devDependencies']['@dnnsoftware/dnn-react-common'] !== undefined) {
                             console.log("@dnnsoftware/dnn-react-common from", packageJson['devDependencies']['@dnnsoftware/dnn-react-common']);
                             packageJson['devDependencies']['@dnnsoftware/dnn-react-common'] = singleDigitsVersion_1;
                             console.log("to ", singleDigitsVersion_1);
                         }
-                        if (includeDnnReactCommon_1 && packageJson['dependencies']['@dnnsoftware/dnn-react-common']) {
+                        if (includeDnnReactCommon_1 && packageJson['dependencies']['@dnnsoftware/dnn-react-common'] !== undefined) {
                             console.log("@dnnsoftware/dnn-react-common from", packageJson['dependencies']['@dnnsoftware/dnn-react-common']);
                             packageJson['dependencies']['@dnnsoftware/dnn-react-common'] = singleDigitsVersion_1;
                             console.log("to ", singleDigitsVersion_1);
