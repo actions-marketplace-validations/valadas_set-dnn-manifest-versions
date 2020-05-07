@@ -214,7 +214,7 @@ function run() {
                             packageJson['dependencies']['@dnnsoftware/dnn-react-common'] = singleDigitsVersion_1;
                             console.log("to ", singleDigitsVersion_1);
                         }
-                        var newFileContent = JSON.stringify(packageJson);
+                        var newFileContent = JSON.stringify(packageJson, null, 2);
                         fs_1.writeFile(file, newFileContent, function (err) {
                             if (err) {
                                 core.setFailed(err.message);
