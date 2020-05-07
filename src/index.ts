@@ -2,7 +2,6 @@ import * as core from '@actions/core';
 import * as glob from '@actions/glob';
 import { readFileSync, writeFile, createReadStream } from 'fs';
 import * as readline from 'readline';
-import * as xml2js from 'xml2js';
 
 async function run() {
     try {
@@ -33,33 +32,9 @@ async function run() {
         const files = await globber.glob();
         files.forEach(file => {
             // Read the manifest
-            const manifestFile = readFileSync(file);
-            const parser = new xml2js.Parser();
-            parser.parseStringPromise(manifestFile.toString())
-                .then(result => {
-                    // Update manifest version
-                    const packages = result.dotnetnuke.packages;
-                    for (let i = 0; i < packages[0].package.length; i++) {
-                        const dnnPackage = packages[0].package[i];
-                        dnnPackage.$.version = version;
-                        console.log(`Set ${dnnPackage.$.name} to version ${version}`)
-                    }
-
-                    // Write back the manifest
-                    const builder = new xml2js.Builder({
-                        headless: true,
-                        cdata: true
-                    });
-                    const newManifestXml = builder.buildObject(result);
-                    writeFile(file, newManifestXml, err => {
-                        if (err){
-                            core.setFailed(err.message);
-                        }
-                        else{
-                            console.log(file + ' saved.');
-                        }
-                    })
-                });
+            const manifestContent = readFileSync(file).toString();
+            const manifestRegex = new RegExp(/<package.*name.*version="(.*)"/gm)
+            manifestContent.replace(manifestRegex, `$1${version}$3`);
         });
 
         // Handle the solutionInfo.cs file
@@ -71,13 +46,13 @@ async function run() {
                 const formatedVersion = formatVersionForSolutionInfo(versionInfo);
                 let solutionInfoContent = readFileSync(solutionInfo).toString();
                 solutionInfoContent = solutionInfoContent.replace(
-                    /[assembly: AssemblyVersion(".*")]/, 
+                    /\[assembly: AssemblyVersion\(".*"\)\]/gm, 
                     `[assembly: AssemblyVersion("${formatedVersion}")]`);
                 solutionInfoContent = solutionInfoContent.replace(
-                    /[assembly: AssemblyFileVersion(".*")]/, 
+                    /\[assembly: AssemblyFileVersion\(".*"\)\]/gm, 
                     `[assembly: AssemblyFileVersion("${formatedVersion}")]`);
                 solutionInfoContent = solutionInfoContent.replace(
-                    /[assembly: AssemblyInformationalVersion(".*")]/, 
+                    /\[assembly: AssemblyInformationalVersion\(".*"\)\]/gm, 
                     `[assembly: AssemblyInformationalVersion("${formatedVersion} Release Candidate")]`);
                 writeFile(solutionInfo, solutionInfoContent, err => {
                     if (err){

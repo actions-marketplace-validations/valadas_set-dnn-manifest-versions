@@ -25,7 +25,6 @@
   "dependencies": {
     "@actions/glob": "^0.1.0",
     "@types/xml2js": "^0.4.5",
-    "actions-toolkit": "^4.0.0",
-    "xml2js": "^0.4.23"
+    "actions-toolkit": "^4.0.0"
   }
 }
