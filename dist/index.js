@@ -54,7 +54,6 @@ var core = __importStar(require("@actions/core"));
 var glob = __importStar(require("@actions/glob"));
 var fs_1 = require("fs");
 var readline = __importStar(require("readline"));
-var xml2js = __importStar(require("xml2js"));
 function run() {
     var e_1, _a;
     return __awaiter(this, void 0, void 0, function () {
@@ -117,32 +116,9 @@ function run() {
                     files = _b.sent();
                     files.forEach(function (file) {
                         // Read the manifest
-                        var manifestFile = fs_1.readFileSync(file);
-                        var parser = new xml2js.Parser();
-                        parser.parseStringPromise(manifestFile.toString())
-                            .then(function (result) {
-                            // Update manifest version
-                            var packages = result.dotnetnuke.packages;
-                            for (var i = 0; i < packages[0].package.length; i++) {
-                                var dnnPackage = packages[0].package[i];
-                                dnnPackage.$.version = version_1;
-                                console.log("Set " + dnnPackage.$.name + " to version " + version_1);
-                            }
-                            // Write back the manifest
-                            var builder = new xml2js.Builder({
-                                headless: true,
-                                cdata: true
-                            });
-                            var newManifestXml = builder.buildObject(result);
-                            fs_1.writeFile(file, newManifestXml, function (err) {
-                                if (err) {
-                                    core.setFailed(err.message);
-                                }
-                                else {
-                                    console.log(file + ' saved.');
-                                }
-                            });
-                        });
+                        var manifestContent = fs_1.readFileSync(file).toString();
+                        var manifestRegex = new RegExp(/<package.*name.*version="(.*)"/gm);
+                        manifestContent.replace(manifestRegex, "$1" + version_1 + "$3");
                     });
                     if (!includeSolutionInfo) return [3 /*break*/, 18];
                     return [4 /*yield*/, glob.create('./**/SolutionInfo.cs', { followSymbolicLinks: false })];
@@ -155,9 +131,9 @@ function run() {
                         var versionInfo = getVersion(version_1);
                         var formatedVersion = formatVersionForSolutionInfo(versionInfo);
                         var solutionInfoContent = fs_1.readFileSync(solutionInfo).toString();
-                        solutionInfoContent = solutionInfoContent.replace(/[assembly: AssemblyVersion(".*")]/, "[assembly: AssemblyVersion(\"" + formatedVersion + "\")]");
-                        solutionInfoContent = solutionInfoContent.replace(/[assembly: AssemblyFileVersion(".*")]/, "[assembly: AssemblyFileVersion(\"" + formatedVersion + "\")]");
-                        solutionInfoContent = solutionInfoContent.replace(/[assembly: AssemblyInformationalVersion(".*")]/, "[assembly: AssemblyInformationalVersion(\"" + formatedVersion + " Release Candidate\")]");
+                        solutionInfoContent = solutionInfoContent.replace(/\[assembly: AssemblyVersion\(".*"\)\]/gm, "[assembly: AssemblyVersion(\"" + formatedVersion + "\")]");
+                        solutionInfoContent = solutionInfoContent.replace(/\[assembly: AssemblyFileVersion\(".*"\)\]/gm, "[assembly: AssemblyFileVersion(\"" + formatedVersion + "\")]");
+                        solutionInfoContent = solutionInfoContent.replace(/\[assembly: AssemblyInformationalVersion\(".*"\)\]/gm, "[assembly: AssemblyInformationalVersion(\"" + formatedVersion + " Release Candidate\")]");
                         fs_1.writeFile(solutionInfo, solutionInfoContent, function (err) {
                             if (err) {
                                 core.setFailed(err.message);
