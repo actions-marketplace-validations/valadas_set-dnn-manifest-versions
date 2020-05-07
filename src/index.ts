@@ -116,17 +116,17 @@ async function run() {
                 const packageJsonContent = readFileSync(file).toString();
                 const packageJson = JSON.parse(packageJsonContent);
                 core.startGroup(packageJson['name']);
-                if (packageJson['version'] !== undefined) {
+                if (packageJson.hasOwnProperty('version')) {
                     console.log("from ", packageJson['version']);
                     packageJson['version'] = getSingleDigitsVersion(version);
                     console.log("to ", packageJson['version']);
                 }
-                if (includeDnnReactCommon && packageJson['devDependencies']['@dnnsoftware/dnn-react-common'] !== undefined) {
+                if (includeDnnReactCommon && packageJson.hasOwnProperty('devDependencies') && packageJson.devDependencies.hasOwnProperty('@dnnsoftware/dnn-react-common')) {
                     console.log("@dnnsoftware/dnn-react-common from", packageJson['devDependencies']['@dnnsoftware/dnn-react-common']);
                     packageJson['devDependencies']['@dnnsoftware/dnn-react-common'] = singleDigitsVersion;
                     console.log("to ", singleDigitsVersion);
                 }
-                if (includeDnnReactCommon && packageJson['dependencies']['@dnnsoftware/dnn-react-common'] !== undefined) {
+                if (includeDnnReactCommon && packageJson.hasOwnProperty('dependencies') && packageJson.dependencies.hasOwnProperty('@dnnsoftware/dnn-react-common')) {
                     console.log("@dnnsoftware/dnn-react-common from", packageJson['dependencies']['@dnnsoftware/dnn-react-common']);
                     packageJson['dependencies']['@dnnsoftware/dnn-react-common'] = singleDigitsVersion;
                     console.log("to ", singleDigitsVersion)
