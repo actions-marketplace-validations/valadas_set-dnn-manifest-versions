@@ -64,7 +64,7 @@ async function run() {
 
         // Handle the solutionInfo.cs file
         if (includeSolutionInfo) {
-            const solutionInfoGlob = await glob.create('/**/SolutionInfo.cs');
+            const solutionInfoGlob = await glob.create('./**/SolutionInfo.cs');
             const solutionInfos = await solutionInfoGlob.glob();
             solutionInfos.forEach(solutionInfo => {
                 const versionInfo = getVersion(version);
