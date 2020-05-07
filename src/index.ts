@@ -32,9 +32,27 @@ async function run() {
         const files = await globber.glob();
         files.forEach(file => {
             // Read the manifest
-            const manifestContent = readFileSync(file).toString();
-            const manifestRegex = new RegExp(/<package.*name.*version="(.*)"/gm)
-            manifestContent.replace(manifestRegex, `$1${version}$3`);
+            let manifestContent = readFileSync(file).toString();
+            const manifestRegex = /<package.*name="(.*?)".*version="(.*)".*/gm;
+            let result;
+            while((result = manifestRegex.exec(manifestContent)) !== null) {
+                // Log what we are doing
+                core.startGroup(file);
+                console.log(`Setting ${result[1]} from ${result[2]} to ${version}`);
+            }
+            // Replace the version
+            const replaceRegex = /<package.*name="(.*?)".*version="(.*)"/gm;
+            manifestContent = manifestContent.replace(replaceRegex, `$1$2$3${version}$5`);
+            // Save the file back
+            writeFile(file, manifestContent, err => {
+                if (err){
+                    core.setFailed(err.message);
+                }
+                else{
+                    console.log(`Saved ${file}`);
+                    core.endGroup();
+                }
+            });
         });
 
         // Handle the solutionInfo.cs file

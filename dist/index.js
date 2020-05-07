@@ -117,8 +117,26 @@ function run() {
                     files.forEach(function (file) {
                         // Read the manifest
                         var manifestContent = fs_1.readFileSync(file).toString();
-                        var manifestRegex = new RegExp(/<package.*name.*version="(.*)"/gm);
-                        manifestContent.replace(manifestRegex, "$1" + version_1 + "$3");
+                        var manifestRegex = /<package.*name="(.*?)".*version="(.*)".*/gm;
+                        var result;
+                        while ((result = manifestRegex.exec(manifestContent)) !== null) {
+                            // Log what we are doing
+                            core.startGroup(file);
+                            console.log("Setting " + result[1] + " from " + result[2] + " to " + version_1);
+                        }
+                        // Replace the version
+                        var replaceRegex = /<package.*name="(.*?)".*version="(.*)"/gm;
+                        manifestContent = manifestContent.replace(replaceRegex, "$1$2$3" + version_1 + "$5");
+                        // Save the file back
+                        fs_1.writeFile(file, manifestContent, function (err) {
+                            if (err) {
+                                core.setFailed(err.message);
+                            }
+                            else {
+                                console.log("Saved " + file);
+                                core.endGroup();
+                            }
+                        });
                     });
                     if (!includeSolutionInfo) return [3 /*break*/, 18];
                     return [4 /*yield*/, glob.create('./**/SolutionInfo.cs', { followSymbolicLinks: false })];
