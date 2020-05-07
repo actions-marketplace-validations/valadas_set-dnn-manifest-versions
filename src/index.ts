@@ -21,7 +21,7 @@ async function run() {
                 crlfDelay: Infinity
             });
             for await (const line of rl) {
-                globPattern += " !" + line;
+                globPattern += "\n!" + line;
                 console.log("Adding " + line + " to ignored globs.");
             }
             console.log("Using glob: ", globPattern);

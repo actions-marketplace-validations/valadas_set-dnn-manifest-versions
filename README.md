@@ -35,7 +35,10 @@ You can alternatively provide your own globbing patter for files to include or e
 - uses: valadas/set-dnn-manifest-versions@v1
   with:
     version: 02.03.04
-    glob: './my-mono-repo/modules/**/*.dnn  !somemodule/*.dnn' # Will include all .dnn files under the my-mono-repo/modules folder except if it is in a somemodule folder. See https://github.com/actions/toolkit/blob/master/packages/glob/README.md#patterns for details on supported values.
+    # Will include all .dnn files under the my-mono-repo/modules folder except if it is in a somemodule folder. See https://github.com/actions/toolkit/blob/master/packages/glob/README.md#patterns for details on supported values.
+    glob: |-
+      ./my-mono-repo/modules/**/*.dnn
+      !somemodule/*.dnn
 ```
 
 ## Example with skipFile (optional)

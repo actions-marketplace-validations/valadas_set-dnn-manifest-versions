@@ -84,7 +84,7 @@ function run() {
                 case 3:
                     if (!(rl_1_1 = _b.sent(), !rl_1_1.done)) return [3 /*break*/, 5];
                     line = rl_1_1.value;
-                    globPattern += " !" + line;
+                    globPattern += "\n!" + line;
                     console.log("Adding " + line + " to ignored globs.");
                     _b.label = 4;
                 case 4: return [3 /*break*/, 2];
