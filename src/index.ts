@@ -12,7 +12,7 @@ async function run() {
 
         // Generate the glob if skipFile is provided
         if (skipFile !== null && skipFile.length > 0) {
-            globPattern = "./**/*.dnn ";
+            globPattern = "**/*.dnn ";
             const fileStream = createReadStream(skipFile);
             const rl = readline.createInterface({
                 input: fileStream,
