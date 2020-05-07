@@ -125,8 +125,8 @@ function run() {
                             console.log("Setting " + result[1] + " from " + result[2] + " to " + version_1);
                         }
                         // Replace the version
-                        var replaceRegex = /<package.*name="(.*?)".*version="(.*)"/gm;
-                        manifestContent = manifestContent.replace(replaceRegex, "$1$2$3" + version_1 + "$5");
+                        var replaceRegex = /(<package.*name=".*?".*version=")(.*)(".*)/gm;
+                        manifestContent = manifestContent.replace(replaceRegex, "$1" + version_1 + "$3");
                         // Save the file back
                         fs_1.writeFile(file, manifestContent, function (err) {
                             if (err) {

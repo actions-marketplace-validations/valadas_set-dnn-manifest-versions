@@ -41,8 +41,8 @@ async function run() {
                 console.log(`Setting ${result[1]} from ${result[2]} to ${version}`);
             }
             // Replace the version
-            const replaceRegex = /<package.*name="(.*?)".*version="(.*)"/gm;
-            manifestContent = manifestContent.replace(replaceRegex, `$1$2$3${version}$5`);
+            const replaceRegex = /(<package.*name=".*?".*version=")(.*)(".*)/gm;
+            manifestContent = manifestContent.replace(replaceRegex, `$1${version}$3`);
             // Save the file back
             writeFile(file, manifestContent, err => {
                 if (err){
