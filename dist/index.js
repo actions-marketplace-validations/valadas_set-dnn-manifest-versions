@@ -67,7 +67,7 @@ function run() {
                     globPattern = core.getInput('glob');
                     skipFile = core.getInput('skipFile');
                     if (!(skipFile !== null && skipFile.length > 0)) return [3 /*break*/, 12];
-                    globPattern = "./**/*.dnn ";
+                    globPattern = "**/*.dnn ";
                     fileStream = fs_1.createReadStream(skipFile);
                     rl = readline.createInterface({
                         input: fileStream,
@@ -105,6 +105,7 @@ function run() {
                 case 12: return [4 /*yield*/, glob.create(globPattern)];
                 case 13:
                     globber = _b.sent();
+                    core.debug("Using glob: " + globPattern);
                     return [4 /*yield*/, globber.glob()];
                 case 14:
                     files = _b.sent();

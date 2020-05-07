@@ -9,6 +9,7 @@ async function run() {
         const version = core.getInput('version');
         let globPattern = core.getInput('glob');
         const skipFile = core.getInput('skipFile');
+        core.debug("skipFile provided: " + skipFile);
 
         // Generate the glob if skipFile is provided
         if (skipFile !== null && skipFile.length > 0) {
@@ -20,12 +21,13 @@ async function run() {
             });
             for await (const line of rl) {
                 globPattern += " !" + line;
+                core.debug("Adding " + line + " to ignored globs.");
             }
+            core.debug("Using glob: " + globPattern);
         }
 
         // Get the files
         const globber = await glob.create(globPattern);
-        core.debug("Using glob: " + globPattern);
         const files = await globber.glob();
         files.forEach(file => {
             // Read the manifest
