@@ -74,7 +74,7 @@ async function run() {
                     `[assembly: AssemblyFileVersion("${formatedVersion}")]`);
                 solutionInfoContent = solutionInfoContent.replace(
                     /\[assembly: AssemblyInformationalVersion\(".*"\)\]/gm, 
-                    `[assembly: AssemblyInformationalVersion("${formatedVersion} Custom Build")]`);
+                    `[assembly: AssemblyInformationalVersion("${formatedVersion} Custom build")]`);
                 writeFile(solutionInfo, solutionInfoContent, err => {
                     if (err){
                         core.setFailed(err.message);
@@ -93,8 +93,8 @@ async function run() {
             const files = await issueTemplateGlob.glob();
             const issueContent = readFileSync(files[0]).toString();
             issueContent.replace(
-                /[.\s\S]*?\* \[ \].*alpha build([.\s\S])*?\* \[ \].*/gm,
-                `$1\n* [ ] ${version} release candidate\n`
+                /([.\s\S]*?\* \[ \].*alpha build)([.\s\S]*?)(\* \[ \].*)/gm,
+                `$1\n* [ ] ${version} release candidate\n$3`
             );
             writeFile(files[0], issueContent, err => {
                 if (err) {

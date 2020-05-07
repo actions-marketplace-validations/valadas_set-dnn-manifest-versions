@@ -154,7 +154,7 @@ function run() {
                         var solutionInfoContent = fs_1.readFileSync(solutionInfo).toString();
                         solutionInfoContent = solutionInfoContent.replace(/\[assembly: AssemblyVersion\(".*"\)\]/gm, "[assembly: AssemblyVersion(\"" + formatedVersion + "\")]");
                         solutionInfoContent = solutionInfoContent.replace(/\[assembly: AssemblyFileVersion\(".*"\)\]/gm, "[assembly: AssemblyFileVersion(\"" + formatedVersion + "\")]");
-                        solutionInfoContent = solutionInfoContent.replace(/\[assembly: AssemblyInformationalVersion\(".*"\)\]/gm, "[assembly: AssemblyInformationalVersion(\"" + formatedVersion + " Custom Build\")]");
+                        solutionInfoContent = solutionInfoContent.replace(/\[assembly: AssemblyInformationalVersion\(".*"\)\]/gm, "[assembly: AssemblyInformationalVersion(\"" + formatedVersion + " Custom build\")]");
                         fs_1.writeFile(solutionInfo, solutionInfoContent, function (err) {
                             if (err) {
                                 core.setFailed(err.message);
@@ -175,7 +175,7 @@ function run() {
                 case 20:
                     files_1 = _b.sent();
                     issueContent = fs_1.readFileSync(files_1[0]).toString();
-                    issueContent.replace(/[.\s\S]*?\* \[ \].*alpha build([.\s\S])*?\* \[ \].*/gm, "$1\n* [ ] " + version_1 + " release candidate\n");
+                    issueContent.replace(/([.\s\S]*?\* \[ \].*alpha build)([.\s\S]*?)(\* \[ \].*)/gm, "$1\n* [ ] " + version_1 + " release candidate\n$3");
                     fs_1.writeFile(files_1[0], issueContent, function (err) {
                         if (err) {
                             core.setFailed(err.message);
