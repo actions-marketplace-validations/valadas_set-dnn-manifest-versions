@@ -116,12 +116,12 @@ function run() {
                     files = _b.sent();
                     files.forEach(function (file) {
                         // Read the manifest
+                        core.startGroup(file);
                         var manifestContent = fs_1.readFileSync(file).toString();
                         var manifestRegex = /<package.*name="(.*?)".*version="(.*)".*/gm;
                         var result;
                         while ((result = manifestRegex.exec(manifestContent)) !== null) {
                             // Log what we are doing
-                            core.startGroup(file);
                             console.log("Setting " + result[1] + " from " + result[2] + " to " + version_1);
                         }
                         // Replace the version

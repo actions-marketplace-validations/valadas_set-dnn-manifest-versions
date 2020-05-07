@@ -32,12 +32,12 @@ async function run() {
         const files = await globber.glob();
         files.forEach(file => {
             // Read the manifest
+            core.startGroup(file);
             let manifestContent = readFileSync(file).toString();
             const manifestRegex = /<package.*name="(.*?)".*version="(.*)".*/gm;
             let result;
             while((result = manifestRegex.exec(manifestContent)) !== null) {
                 // Log what we are doing
-                core.startGroup(file);
                 console.log(`Setting ${result[1]} from ${result[2]} to ${version}`);
             }
             // Replace the version
